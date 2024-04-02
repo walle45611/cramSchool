@@ -2,7 +2,7 @@ import os
 import json
 import csv
 from urllib.parse import quote, quote_plus
-from sqlalchemy import create_engine, MetaData, Table, select,text
+from sqlalchemy import create_engine, MetaData, Table, select, text
 from urllib.parse import quote_plus
 
 password = "P@ssw0rd!"
@@ -17,22 +17,25 @@ metadata = MetaData()
 metadata.reflect(bind=engine)
 
 def get_cramschool_common_city_id():
-    with engine.connect() as conn:  
+    with engine.connect() as conn:
         sql = text('select * from cramschool_common_city')
         result = conn.execute(sql)
-        return [{row[1]:row[0]} for row in result]
+        return [{row[1]: row[0]} for row in result]
+
 
 def get_cramschool_common_category_id():
     with engine.connect() as conn:
         sql = text('select * from cramschool_common_category')
         result = conn.execute(sql)
-        return [{row[1]:row[0]} for row in result]
+        return [{row[1]: row[0]} for row in result]
+
 
 def get_cramschool_info_id():
     with engine.connect() as conn:
         sql = text('select * from cramschool_management_info')
         result = conn.execute(sql)
-        return [{row[1]:row[0]} for row in result]
+        return [{row[1]: row[0]} for row in result]
+
 
 def transformer_info_data():
     csvResult = []
@@ -55,29 +58,13 @@ def transformer_info_data():
                 del afterschool['短期補習班類別']
 
             for city_info in cities:
-                city_name = next(iter(city_info.keys()))  
+                city_name = next(iter(city_info.keys()))
                 if afterschool['地區縣市'] == city_name:
-                    afterschool['地區縣市'] = city_info[city_name]        
+                    afterschool['地區縣市'] = city_info[city_name]
 
             csvResult.append(afterschool)
 
     return csvResult, cities, categories
-
-def cramschool_info_csv():
-    csvResult,cities,categories = transformer_info_data()
-    csv_file = 'data.csv'
-
-    with open(csv_file, 'w', newline='', encoding='utf-8') as f:
-        writer = csv.writer(f)
-        
-        for item in csvResult:
-            print(item)
-            row = [str(value) for value in item.values()]
-            writer.writerow(row)
-
-    print('data.csv is created')
-    print(cities)
-    print(categories)
 
 def cramschool_category():
     infos = get_cramschool_info_id()
@@ -94,7 +81,8 @@ def cramschool_category():
 
         for afterschool in data:
             keys_to_keep = ['短期補習班名稱', '短期補習班類別']
-            afterschool = {key: value for key, value in afterschool.items() if key in keys_to_keep}
+            afterschool = {key: value for key,
+                           value in afterschool.items() if key in keys_to_keep}
 
             for category in afterschool['短期補習班類別'].split('、'):
                 new_afterschool = afterschool.copy()
@@ -107,12 +95,29 @@ def cramschool_category():
                 csvResult.append(new_afterschool)
 
     for info in infos:
-        info_name = next(iter(info.keys())) 
+        info_name = next(iter(info.keys()))
         for item in csvResult:
             if item['短期補習班名稱'] == info_name:
-                item['短期補習班名稱'] = info[info_name] 
+                item['短期補習班名稱'] = info[info_name]
 
     return csvResult
+
+def cramschool_info_csv():
+    csvResult, cities, categories = transformer_info_data()
+    csv_file = 'data.csv'
+
+    with open(csv_file, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+
+        for item in csvResult:
+            print(item)
+            row = [str(value) for value in item.values()]
+            writer.writerow(row)
+
+    print('data.csv is created')
+    print(cities)
+    print(categories)
+
 
 def cramschool_category_csv():
     csvResult = cramschool_category()
@@ -120,13 +125,14 @@ def cramschool_category_csv():
 
     with open(csv_file, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
-        
+
         for item in csvResult:
             print(item)
             row = [str(value) for value in item.values()]
             writer.writerow(row)
 
     print('cramschool_category.csv is created')
+
 
 cramschool_info_csv()
 cramschool_category_csv()

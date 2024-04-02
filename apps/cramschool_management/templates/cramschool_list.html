@@ -1,0 +1,11 @@
+<!-- cramschool_list.html -->
+{% extends "layout.html" %}
+{% block title %}Home - My Website{% endblock %}
+{% block content %}
+    <ul>
+        {% for item in Info %}
+            <li>{{ item.name }} {{ item.address}}</li>
+            <!-- Replace "field_name" with the actual field names in your Info model -->
+        {% endfor %}
+    </ul>
+{% endblock %}
