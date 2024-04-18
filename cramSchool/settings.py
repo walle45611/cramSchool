@@ -38,8 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'cramschool_common',
-    'cramschool_management',
+    'apps.cramschool_common',
+    'apps.cramschool_management',
     'bootstrap5',
 ]
 
