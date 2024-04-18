@@ -2,10 +2,15 @@
 
 from django.shortcuts import redirect, render
 from .models import Info
+from django.core.paginator import Paginator
+
 
 def cramschool_list(request):
-    info = Info.objects.all()
-    return render(request, 'cramschool_list.html', {"Info": info})
+    info_list = Info.objects.all()
+    paginator = Paginator(info_list, 10)  # 每页显示 10 个对象
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'cramschool_list.html', {'page_obj': page_obj})
 
 # def update_address(request, school_id):
 #     if request.method == 'POST':
